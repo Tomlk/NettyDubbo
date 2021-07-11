@@ -21,15 +21,19 @@ public class NettyClient {
 
     private static NettyClientHandler client;
 
+    private int count=0;
+
     //编写方法使用代理模式，获取一个代理对象
 
     public Object getBean(final Class<?> serviceClass,final String providerName){
         return Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),new Class<?>[]{serviceClass},(proxy, method, args) -> {
             //{} 部分代码，客户端每调用一次 hello，就会进入该代码块
+            System.out.println("(proxy, method, args) 进入...." + (++count) + " 次");
             if(client==null){
                 initClient();
             }
 
+            //System.out.println(args);
             //设置要发给服务器的信息
             //providerName:协议头  args[0]:客户端调用api时 hello(args[0])
             client.setPara(providerName+args[0]);
@@ -61,7 +65,7 @@ public class NettyClient {
                 });
 
         try {
-            bootstrap.connect("localhost",6667).sync();
+            bootstrap.connect("localhost",7000).sync();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
